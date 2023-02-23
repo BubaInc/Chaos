@@ -259,7 +259,3 @@ func get_img2img_b64(image: Image) -> String:
 	var imgbuffer = image.save_png_to_buffer()
 	return(Marshalls.raw_to_base64(imgbuffer))
 	
-
-
-func _on_Button_pressed():
-	generate()

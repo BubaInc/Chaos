@@ -1,34 +1,131 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://addons/stable_horde_client/stable_horde_client.gd" type="Script" id=1]
 [ext_resource path="res://Gallery.gd" type="Script" id=2]
+[ext_resource path="res://UiTheme.tres" type="Theme" id=3]
+[ext_resource path="res://Roboto/Roboto-Regular.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://1024Test.png" type="Texture" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+size = 30
+font_data = ExtResource( 4 )
 
 [node name="Gallery" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
 
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
+[node name="StableHordeClient" type="HTTPRequest" parent="."]
 script = ExtResource( 1 )
 
-[node name="Button" type="Button" parent="."]
-margin_right = 594.0
-margin_bottom = 164.0
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_right = 1090.0
+margin_bottom = 614.0
+window_title = "Open a File"
+mode = 0
+access = 2
+filters = PoolStringArray( "*.png", "*.jpg" )
 
-[node name="Preview" type="TextureRect" parent="."]
-unique_name_in_owner = true
+[node name="WrongResolution" type="PopupDialog" parent="."]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -380.5
-margin_top = -301.5
-margin_right = 380.5
-margin_bottom = 301.5
+margin_left = -242.0
+margin_top = -55.0
+margin_right = 238.0
+margin_bottom = 49.0
+__meta__ = {
+"_edit_group_": true
+}
 
-[connection signal="image_processing" from="HTTPRequest" to="." method="_on_HTTPRequest_image_processing"]
-[connection signal="images_generated" from="HTTPRequest" to="." method="_on_HTTPRequest_images_generated"]
-[connection signal="request_failed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_failed"]
-[connection signal="request_initiated" from="HTTPRequest" to="." method="_on_HTTPRequest_request_initiated"]
-[connection signal="request_warning" from="HTTPRequest" to="." method="_on_HTTPRequest_request_warning"]
-[connection signal="pressed" from="Button" to="HTTPRequest" method="_on_Button_pressed"]
+[node name="Label" type="Label" parent="WrongResolution"]
+margin_left = 67.0
+margin_top = 46.0
+margin_right = 438.0
+margin_bottom = 131.0
+text = "You need to use an image with a resolution of 1024x1024"
+
+[node name="CreateArtwork" type="ColorRect" parent="."]
+anchor_left = 0.7
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.172549, 0.172549, 0.172549, 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CreateArtwork"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Title" type="Label" parent="CreateArtwork/VBoxContainer"]
+margin_right = 576.0
+margin_bottom = 48.0
+theme = ExtResource( 3 )
+text = "Create your artwork"
+
+[node name="TextureRect" type="TextureRect" parent="CreateArtwork/VBoxContainer"]
+visible = false
+margin_top = 52.0
+margin_right = 576.0
+margin_bottom = 564.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 6
+
+[node name="Buttons" type="VBoxContainer" parent="CreateArtwork/VBoxContainer"]
+margin_top = 52.0
+margin_right = 576.0
+margin_bottom = 1080.0
+size_flags_vertical = 3
+
+[node name="Upload" type="Button" parent="CreateArtwork/VBoxContainer/Buttons"]
+margin_right = 576.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 0, 100 )
+custom_fonts/font = SubResource( 1 )
+text = "Upload from this device"
+
+[node name="Prompt" type="TextEdit" parent="CreateArtwork/VBoxContainer/Buttons"]
+margin_top = 104.0
+margin_right = 576.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 0, 100 )
+text = "Enter a prompt here"
+
+[node name="GenerateButton" type="Control" parent="CreateArtwork/VBoxContainer/Buttons"]
+margin_top = 208.0
+margin_right = 576.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 0, 100 )
+
+[node name="Generate" type="Button" parent="CreateArtwork/VBoxContainer/Buttons/GenerateButton"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 1 )
+text = "Generate with the prompt above"
+
+[node name="ProgressBar" type="ProgressBar" parent="CreateArtwork/VBoxContainer/Buttons/GenerateButton"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+
+[node name="Submit" type="Button" parent="CreateArtwork/VBoxContainer/Buttons"]
+visible = false
+margin_top = 312.0
+margin_right = 576.0
+margin_bottom = 412.0
+rect_min_size = Vector2( 0, 100 )
+custom_fonts/font = SubResource( 1 )
+text = "Submit the current image"
+
+[connection signal="image_processing" from="StableHordeClient" to="." method="_on_HTTPRequest_image_processing"]
+[connection signal="images_generated" from="StableHordeClient" to="." method="_on_HTTPRequest_images_generated"]
+[connection signal="request_failed" from="StableHordeClient" to="." method="_on_HTTPRequest_request_failed"]
+[connection signal="request_initiated" from="StableHordeClient" to="." method="_on_HTTPRequest_request_initiated"]
+[connection signal="request_warning" from="StableHordeClient" to="." method="_on_HTTPRequest_request_warning"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
+[connection signal="pressed" from="CreateArtwork/VBoxContainer/Buttons/Upload" to="." method="_on_Upload_pressed"]
+[connection signal="pressed" from="CreateArtwork/VBoxContainer/Buttons/GenerateButton/Generate" to="." method="_on_Generate_pressed"]
+[connection signal="pressed" from="CreateArtwork/VBoxContainer/Buttons/Submit" to="." method="_on_Submit_pressed"]
